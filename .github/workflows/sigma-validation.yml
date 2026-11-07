@@ -1,0 +1,27 @@
+name: Sigma rule validation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install sigma-cli
+        run: pip install sigma-cli==4.0.0
+
+      - name: Validate Sigma rules
+        run: sigma check --fail-on-error --fail-on-issues rules/
