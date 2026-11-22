@@ -1,0 +1,30 @@
+title: Local Group Discovery Via Net.EXE
+id: 02379bf2-869d-4c38-91b8-d4e5b18fe156
+status: experimental
+description: Detects net.exe or net1.exe listing local groups or their members, for example "net localgroup administrators".
+references:
+    - https://attack.mitre.org/techniques/T1069/001/
+author: Nourhan Elyamany
+date: 2026-11-22
+tags:
+    - attack.discovery
+    - attack.t1069.001
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection_img:
+        - Image|endswith: '\net.exe'
+        - OriginalFileName: '\net.exe'
+        - Image|endswith: '\net1.exe'
+        - OriginalFileName: '\net1.exe'
+    selection_cli:
+        CommandLine|contains: ' localgroup'
+    filter_main_net1_child:
+        ParentImage|endswith: '\net.exe'
+        Image|endswith: '\net1.exe'
+    condition: all of selection_* and not 1 of filter_main_*
+falsepositives:
+    - Helpdesk or administrators checking local group membership while troubleshooting
+    - Inventory, audit or RMM tools and login scripts that collect group membership
+level: low
